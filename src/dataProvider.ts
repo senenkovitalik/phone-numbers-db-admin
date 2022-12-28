@@ -1,8 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { DataProvider } from "ra-core";
-
-const omit = (keys: Partial<any>, obj: {}) =>
-  Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
+import { omit } from "lodash";
 
 const apiUrl = "http://localhost:3001/graphql";
 
@@ -147,14 +145,14 @@ export const dataProvider: DataProvider = {
     return client
       .mutate({
         mutation: gql`
-            mutation ($id: Int!, $data: ${resource}_set_input!) {
-                update_${resource}_by_pk(pk_columns: { id: $id }, _set: $data) {
-                    ${fields[resource]}
-                }
-            }`,
+          mutation ($id: Int!, $data: ${resource}_update_input!) {
+            update_${resource}_by_pk(id: $id, data: $data) {
+              ${fields[resource]}
+            }
+          }`,
         variables: {
-          id: params.id,
-          data: omit(params.data, ["__typename"]),
+          id: parseInt(params.id as string),
+          data: omit(params.data, ["id", "__typename"]),
         },
       })
       .then((result) => ({

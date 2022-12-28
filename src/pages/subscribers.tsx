@@ -5,15 +5,17 @@ import {
   Edit,
   SimpleForm,
   TextInput,
+  EditButton,
 } from "react-admin";
 
 export const SubscriberList = () => (
   <List>
-    <Datagrid rowClick="edit">
+    <Datagrid>
       <TextField source="id" />
       <TextField source="firstName" />
       <TextField source="middleName" />
       <TextField source="lastName" />
+      <EditButton />
     </Datagrid>
   </List>
 );
