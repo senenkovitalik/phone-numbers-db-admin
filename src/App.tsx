@@ -1,11 +1,12 @@
 import { Admin, Resource } from "react-admin";
-import GroupsIcon from '@mui/icons-material/Groups';
+import GroupsIcon from "@mui/icons-material/Groups";
 import { dataProvider } from "./dataProvider";
 import {
   SubscriberCreate,
   SubscriberEdit,
   SubscriberList,
 } from "./pages/subscribers";
+import { CommunicationTypeList } from "./pages/communicationType";
 
 const App = () => (
   <Admin dataProvider={dataProvider}>
@@ -16,6 +17,7 @@ const App = () => (
       create={SubscriberCreate}
       icon={GroupsIcon}
     />
+    <Resource name="communication_types" list={CommunicationTypeList} />
   </Admin>
 );
 
