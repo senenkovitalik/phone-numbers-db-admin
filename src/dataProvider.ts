@@ -21,7 +21,8 @@ const client = new ApolloClient({
 
 const fields: { [key: string]: string } = {
   subscribers: "id firstName middleName lastName",
-  communication_types: "id value description"
+  communication_types: "id value description",
+  communication_phone_numbers: "id value communicationTypeId locationId",
 };
 
 export const dataProvider: DataProvider = {

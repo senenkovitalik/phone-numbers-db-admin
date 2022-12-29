@@ -1,4 +1,4 @@
-import { Admin, Resource } from "react-admin";
+import { Admin, ListGuesser, Resource } from "react-admin";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { dataProvider } from "./dataProvider";
 import {
@@ -18,6 +18,7 @@ const App = () => (
       icon={GroupsIcon}
     />
     <Resource name="communication_types" list={CommunicationTypeList} />
+    <Resource name="communication_phone_numbers" list={ListGuesser} />
   </Admin>
 );
 
