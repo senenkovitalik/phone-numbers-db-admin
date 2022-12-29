@@ -6,6 +6,7 @@ import {
   SimpleForm,
   TextInput,
   EditButton,
+  Create,
 } from "react-admin";
 
 export const SubscriberList = () => (
@@ -29,4 +30,14 @@ export const SubscriberEdit = () => (
       <TextInput source="lastName" />
     </SimpleForm>
   </Edit>
+);
+
+export const SubscriberCreate = () => (
+  <Create>
+    <SimpleForm>
+      <TextInput source="firstName" />
+      <TextInput source="middleName" />
+      <TextInput source="lastName" />
+    </SimpleForm>
+  </Create>
 );

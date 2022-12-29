@@ -128,8 +128,8 @@ export const dataProvider: DataProvider = {
     return client
       .mutate({
         mutation: gql`
-            mutation ($data: ${resource}_insert_input!) {
-                insert_${resource}_one(object: $data) {
+            mutation ($data: ${resource}_update_input!) {
+                insert_${resource}_one(data: $data) {
                     ${fields[resource]}
                 }
             }`,
