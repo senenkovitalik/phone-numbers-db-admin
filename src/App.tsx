@@ -1,4 +1,5 @@
 import { Admin, Resource } from "react-admin";
+import GroupsIcon from '@mui/icons-material/Groups';
 import { dataProvider } from "./dataProvider";
 import {
   SubscriberCreate,
@@ -13,6 +14,7 @@ const App = () => (
       list={SubscriberList}
       edit={SubscriberEdit}
       create={SubscriberCreate}
+      icon={GroupsIcon}
     />
   </Admin>
 );
