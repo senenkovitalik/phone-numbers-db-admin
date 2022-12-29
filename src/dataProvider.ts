@@ -200,18 +200,18 @@ export const dataProvider: DataProvider = {
     return client
       .mutate({
         mutation: gql`
-            mutation ($where: ${resource}_bool_exp!) {
-                delete_${resource}(where: $where) {
-                    affected_rows
-                }
-            }`,
+          mutation ($where: ${resource}_delete_input!) {
+            delete_${resource}(where: $where) {
+              affected_rows
+            }
+          }`,
         variables: {
           where: {
-            id: { _in: params.ids },
+            ids: params.ids,
           },
         },
       })
-      .then((result) => ({
+      .then(() => ({
         data: params.ids,
       }));
   },
