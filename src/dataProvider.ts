@@ -32,11 +32,11 @@ export const dataProvider: DataProvider = {
     return client
       .query({
         query: gql`
-            query ($limit: Int, $offset: Int, $order_by: [${resource}_order_by!]) {
-                ${resource}(limit: $limit, offset: $offset, order_by: $order_by) {
+            query ($limit: Int, $offset: Int, $order_by: [${resource}_order_by!], $where: ${resource}_where_exp) {
+                ${resource}(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
                     ${fields[resource]}
                 }
-                ${resource}_aggregate {
+                ${resource}_aggregate(where: $where) {
                     aggregate {
                         count
                     }
@@ -79,7 +79,7 @@ export const dataProvider: DataProvider = {
     return client
       .query({
         query: gql`
-            query ($where: ${resource}_bool_exp) {
+            query ($where: ${resource}_where_exp) {
                 ${resource}(where: $where) {
                     ${fields[resource]}
                 }
