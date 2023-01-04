@@ -1,4 +1,12 @@
-import { Datagrid, DateField, EditButton, List, TextField } from "react-admin";
+import {
+  Datagrid,
+  DateField,
+  EditButton,
+  List,
+  TextField,
+  Show,
+  SimpleShowLayout,
+} from "react-admin";
 
 export const CommunicationTypeList = () => (
   <List>
@@ -9,4 +17,14 @@ export const CommunicationTypeList = () => (
       <EditButton />
     </Datagrid>
   </List>
+);
+
+export const CommunicationTypeShow = () => (
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="id" />
+      <TextField source="value" />
+      <DateField source="description" />
+    </SimpleShowLayout>
+  </Show>
 );
