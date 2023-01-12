@@ -1,24 +1,24 @@
-import {
-  Admin,
-  ShowGuesser,
-  Resource,
-} from "react-admin";
+import { Admin, ShowGuesser, Resource } from "react-admin";
 import GroupsIcon from "@mui/icons-material/Groups";
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import NumbersIcon from '@mui/icons-material/Numbers';
-import DynamicFormIcon from '@mui/icons-material/DynamicForm';
+import LocationCityIcon from "@mui/icons-material/LocationCity";
+import NumbersIcon from "@mui/icons-material/Numbers";
+import DynamicFormIcon from "@mui/icons-material/DynamicForm";
 
 import { dataProvider } from "./dataProvider";
 import {
   SubscriberCreate,
   SubscriberEdit,
   SubscriberList,
+  SubscriberShow,
 } from "./pages/subscribers";
 import {
   CommunicationTypeList,
   CommunicationTypeShow,
 } from "./pages/communicationType";
-import { CommunicationPhoneNumberList } from "./pages/communicationPhoneNembers";
+import {
+  CommunicationPhoneNumberEdit,
+  CommunicationPhoneNumberList,
+} from "./pages/communicationPhoneNembers";
 import { LocationEdit, LocationList, LocationShow } from "./pages/locations";
 
 const App = () => (
@@ -26,6 +26,7 @@ const App = () => (
     <Resource
       name="subscribers"
       list={SubscriberList}
+      show={SubscriberShow}
       edit={SubscriberEdit}
       create={SubscriberCreate}
       icon={GroupsIcon}
@@ -40,6 +41,7 @@ const App = () => (
       name="communication_phone_numbers"
       list={CommunicationPhoneNumberList}
       show={ShowGuesser}
+      edit={CommunicationPhoneNumberEdit}
       icon={NumbersIcon}
     />
     <Resource

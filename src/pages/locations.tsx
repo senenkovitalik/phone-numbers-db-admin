@@ -14,6 +14,8 @@ export const LocationList = () => (
   <List>
     <Datagrid rowClick="show">
       <TextField source="id" />
+      <TextField source="name" />
+      <TextField source="description" />
       <TextField source="country" />
       <TextField source="region" />
       <TextField source="district" />
@@ -32,6 +34,8 @@ export const LocationEdit = () => (
   <Edit>
     <SimpleForm>
       <TextInput source="id" disabled />
+      <TextInput source="name" />
+      <TextInput source="description" />
       <TextInput source="country" />
       <TextInput source="region" />
       <TextInput source="district" />
@@ -49,6 +53,8 @@ export const LocationShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" />
+      <TextField source="name" />
+      <TextField source="description" />
       <TextField source="country" />
       <TextField source="region" />
       <TextField source="district" />

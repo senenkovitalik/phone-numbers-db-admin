@@ -7,6 +7,8 @@ import {
   TextInput,
   EditButton,
   Create,
+  Show,
+  SimpleShowLayout,
 } from "react-admin";
 
 export const SubscriberList = () => (
@@ -19,6 +21,17 @@ export const SubscriberList = () => (
       <EditButton />
     </Datagrid>
   </List>
+);
+
+export const SubscriberShow = () => (
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="id" />
+      <TextField source="firstName" />
+      <TextField source="middleName" />
+      <TextField source="lastName" />
+    </SimpleShowLayout>
+  </Show>
 );
 
 export const SubscriberEdit = () => (
