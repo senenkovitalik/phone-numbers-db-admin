@@ -9,6 +9,7 @@ import {
   Create,
   Show,
   SimpleShowLayout,
+  ShowButton,
 } from "react-admin";
 
 export const SubscriberList = () => (
@@ -19,6 +20,7 @@ export const SubscriberList = () => (
       <TextField source="middleName" />
       <TextField source="lastName" />
       <EditButton />
+      <ShowButton />
     </Datagrid>
   </List>
 );
