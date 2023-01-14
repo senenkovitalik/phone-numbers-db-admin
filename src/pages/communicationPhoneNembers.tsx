@@ -11,6 +11,9 @@ import {
   SelectInput,
   useRecordContext,
   Create,
+  ShowButton,
+  Show,
+  SimpleShowLayout,
 } from "react-admin";
 
 export const CommunicationPhoneNumberList = () => (
@@ -37,8 +40,34 @@ export const CommunicationPhoneNumberList = () => (
       </ReferenceField>
 
       <EditButton />
+      <ShowButton />
     </Datagrid>
   </List>
+);
+
+export const CommunicationPhoneNumberShow = () => (
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="id" />
+
+      <TextField source="value" />
+
+      <ReferenceField
+        source="communicationTypeId"
+        reference="communication_types"
+      >
+        <TextField source="value" />
+      </ReferenceField>
+
+      <ReferenceField source="locationId" reference="locations" link="show">
+        <TextField source="name" />
+      </ReferenceField>
+
+      <ReferenceField source="subscriberId" reference="subscribers" link="show">
+        <FullNameField />
+      </ReferenceField>
+    </SimpleShowLayout>
+  </Show>
 );
 
 const FullNameField = () => {
