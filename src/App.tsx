@@ -16,6 +16,7 @@ import {
   CommunicationTypeShow,
 } from "./pages/communicationType";
 import {
+  CommunicationPhoneNumberCreate,
   CommunicationPhoneNumberEdit,
   CommunicationPhoneNumberList,
 } from "./pages/communicationPhoneNembers";
@@ -42,6 +43,7 @@ const App = () => (
       list={CommunicationPhoneNumberList}
       show={ShowGuesser}
       edit={CommunicationPhoneNumberEdit}
+      create={CommunicationPhoneNumberCreate}
       icon={NumbersIcon}
     />
     <Resource

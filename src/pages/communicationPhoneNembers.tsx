@@ -10,6 +10,7 @@ import {
   TextInput,
   SelectInput,
   useRecordContext,
+  Create,
 } from "react-admin";
 
 export const CommunicationPhoneNumberList = () => (
@@ -71,3 +72,23 @@ export const CommunicationPhoneNumberEdit = () => {
     </Edit>
   );
 };
+
+export const CommunicationPhoneNumberCreate = () => (
+  <Create redirect="list">
+    <SimpleForm>
+      <TextInput source="value" />
+      <ReferenceInput
+        source="communicationTypeId"
+        reference="communication_types"
+      >
+        <SelectInput optionText={"value"} />
+      </ReferenceInput>
+      <ReferenceInput source="locationId" reference="locations">
+        <SelectInput optionText={"name"} />
+      </ReferenceInput>
+      <ReferenceInput source="subscriberId" reference="subscribers">
+        <SelectInput optionText={<FullNameField />} />
+      </ReferenceInput>
+    </SimpleForm>
+  </Create>
+);
