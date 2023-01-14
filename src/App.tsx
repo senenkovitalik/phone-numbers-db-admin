@@ -12,6 +12,8 @@ import {
   SubscriberShow,
 } from "./pages/subscribers";
 import {
+  CommunicationTypeCreate,
+  CommunicationTypeEdit,
   CommunicationTypeList,
   CommunicationTypeShow,
 } from "./pages/communicationType";
@@ -37,6 +39,8 @@ const App = () => (
       name="communication_types"
       list={CommunicationTypeList}
       show={CommunicationTypeShow}
+      edit={CommunicationTypeEdit}
+      create={CommunicationTypeCreate}
       icon={DynamicFormIcon}
     />
     <Resource
