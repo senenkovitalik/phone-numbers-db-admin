@@ -12,8 +12,14 @@ import {
   ShowButton,
 } from "react-admin";
 
+const subscriberFilters = [
+  <TextInput label="First Name" source="firstName" />,
+  <TextInput label="Middle Name" source="middleName" />,
+  <TextInput label="Last Name" source="lastName" />
+];
+
 export const SubscriberList = () => (
-  <List>
+  <List filters={subscriberFilters}>
     <Datagrid>
       <TextField source="id" />
       <TextField source="firstName" />
