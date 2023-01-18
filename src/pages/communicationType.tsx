@@ -1,6 +1,5 @@
 import {
   Datagrid,
-  DateField,
   EditButton,
   List,
   TextField,
@@ -13,8 +12,13 @@ import {
   ShowButton,
 } from "react-admin";
 
+const communicationTypeFilters = [
+  <TextInput label="Value" source="value" />,
+  <TextInput label="Description" source="description" />,
+];
+
 export const CommunicationTypeList = () => (
-  <List>
+  <List filters={communicationTypeFilters}>
     <Datagrid>
       <TextField source="id" />
       <TextField source="value" />
