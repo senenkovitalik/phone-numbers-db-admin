@@ -14,10 +14,26 @@ import {
   ShowButton,
   Show,
   SimpleShowLayout,
+  AutocompleteInput,
 } from "react-admin";
 
+const communicationPhoneNumberFilters = [
+  <TextInput label="Value" source="value" />,
+  <ReferenceInput
+    label="Communication Type"
+    source="communicationTypeId"
+    reference="communication_types"
+  >
+    <AutocompleteInput optionText="value" />
+  </ReferenceInput>,
+  <ReferenceInput label="Location" source="locationId" reference="locations">
+    <AutocompleteInput optionText="name" />
+  </ReferenceInput>,
+  <TextInput label="Subscriber" source="subscriber" />,
+];
+
 export const CommunicationPhoneNumberList = () => (
-  <List>
+  <List filters={communicationPhoneNumberFilters}>
     <Datagrid>
       <TextField source="id" />
 
