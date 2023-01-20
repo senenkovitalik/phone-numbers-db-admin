@@ -33,16 +33,16 @@ export const dataProvider: DataProvider = {
     return client
       .query({
         query: gql`
-            query ($limit: Int, $offset: Int, $order_by: ${resource}_order_by!, $where: ${resource}_where_exp) {
-                ${resource}(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
-                    ${fields[resource]}
-                }
-                ${resource}_aggregate(where: $where) {
-                    aggregate {
-                        count
-                    }
-                }
-            }`,
+          query ($limit: Int, $offset: Int, $order_by: ${resource}_order_by!, $where: ${resource}_where_exp) {
+            ${resource}(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
+              ${fields[resource]}
+            }
+            ${resource}_aggregate(where: $where) {
+              aggregate {
+                count
+              }
+            }
+          }`,
         variables: {
           limit: perPage,
           offset: (page - 1) * perPage,
