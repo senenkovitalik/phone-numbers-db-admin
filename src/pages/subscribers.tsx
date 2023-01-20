@@ -10,12 +10,14 @@ import {
   Show,
   SimpleShowLayout,
   ShowButton,
+  SearchInput,
 } from "react-admin";
 
 const subscriberFilters = [
+  <SearchInput source="q" alwaysOn />,
   <TextInput label="First Name" source="firstName" />,
   <TextInput label="Middle Name" source="middleName" />,
-  <TextInput label="Last Name" source="lastName" />
+  <TextInput label="Last Name" source="lastName" />,
 ];
 
 export const SubscriberList = () => (
