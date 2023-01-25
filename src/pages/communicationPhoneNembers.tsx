@@ -15,9 +15,11 @@ import {
   Show,
   SimpleShowLayout,
   AutocompleteInput,
+  SearchInput,
 } from "react-admin";
 
 const communicationPhoneNumberFilters = [
+  <SearchInput source="q" alwaysOn />,
   <TextInput label="Value" source="value" />,
   <ReferenceInput
     label="Communication Type"
@@ -35,25 +37,17 @@ const communicationPhoneNumberFilters = [
 export const CommunicationPhoneNumberList = () => (
   <List filters={communicationPhoneNumberFilters}>
     <Datagrid>
-      <TextField source="id" />
+      <TextField source="id" label="ID" />
 
-      <TextField source="value" />
+      <TextField source="value" label="Phone Number" />
 
-      <ReferenceField
-        source="communicationTypeId"
-        reference="communication_types"
-        link="show"
-      >
-        <TextField source="value" />
-      </ReferenceField>
+      <TextField source="communicationType.value" label="Communication Type" />
 
-      <ReferenceField source="locationId" reference="locations" link="show">
-        <TextField source="name" />
-      </ReferenceField>
+      {/* <ReferenceField source="locationId" reference="locations" link="show"> */}
+      <TextField source="location.name" label="Location" />
+      {/* </ReferenceField> */}
 
-      <ReferenceField source="subscriberId" reference="subscribers" link="show">
-        <FullNameField />
-      </ReferenceField>
+      <FullNameField />
 
       <EditButton />
       <ShowButton />
@@ -87,10 +81,10 @@ export const CommunicationPhoneNumberShow = () => (
 );
 
 const FullNameField = () => {
-  const record = useRecordContext();
+  const { subscriber } = useRecordContext();
   return (
     <span>
-      {record.firstName} {record.middleName} {record.lastName}
+      {subscriber.firstName} {subscriber.middleName} {subscriber.lastName}
     </span>
   );
 };
