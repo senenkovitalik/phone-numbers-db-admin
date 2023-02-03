@@ -16,7 +16,10 @@ import {
   SimpleShowLayout,
   AutocompleteInput,
   SearchInput,
+  FunctionField,
+  Link,
 } from "react-admin";
+import { CommunicationPhoneNumber } from "./types";
 
 const communicationPhoneNumberFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -41,13 +44,37 @@ export const CommunicationPhoneNumberList = () => (
 
       <TextField source="value" label="Phone Number" />
 
-      <TextField source="communicationType.value" label="Communication Type" />
+      <FunctionField
+        label="Communication Type"
+        sortBy="communicationType.value"
+        render={({
+          communicationType: { id, value },
+        }: CommunicationPhoneNumber) => {
+          return <Link to={`/communication_types/${id}/show`}>{value}</Link>;
+        }}
+      />
 
-      {/* <ReferenceField source="locationId" reference="locations" link="show"> */}
-      <TextField source="location.name" label="Location" />
-      {/* </ReferenceField> */}
+      <FunctionField
+        label="Location"
+        sortBy="location.name"
+        render={({ location: { id, name } }: CommunicationPhoneNumber) => {
+          return <Link to={`/locations/${id}/show`}>{name}</Link>;
+        }}
+      />
 
-      <FullNameField />
+      <FunctionField
+        label="Subscriber"
+        sortBy="subscriber.firstName"
+        render={({
+          subscriber: { id, firstName, middleName, lastName },
+        }: CommunicationPhoneNumber) => {
+          return (
+            <Link to={`/subscribers/${id}/show`}>
+              <FullNameField />
+            </Link>
+          );
+        }}
+      />
 
       <EditButton />
       <ShowButton />
