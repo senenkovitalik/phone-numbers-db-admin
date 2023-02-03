@@ -63,7 +63,7 @@ export const dataProvider: DataProvider = {
         variables: {
           limit: perPage,
           offset: (page - 1) * perPage,
-          order_by: { [field]: order.toLowerCase() },
+          order_by: { field: field, order: order.toLowerCase() },
           where: Object.keys(filter).reduce(
             (prev, key) => ({
               ...prev,

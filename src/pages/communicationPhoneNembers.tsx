@@ -46,6 +46,7 @@ export const CommunicationPhoneNumberList = () => (
 
       <FunctionField
         label="Communication Type"
+        sortBy="communicationType.value"
         render={({
           communicationType: { id, value },
         }: CommunicationPhoneNumber) => {
@@ -55,6 +56,7 @@ export const CommunicationPhoneNumberList = () => (
 
       <FunctionField
         label="Location"
+        sortBy="location.name"
         render={({ location: { id, name } }: CommunicationPhoneNumber) => {
           return <Link to={`/locations/${id}/show`}>{name}</Link>;
         }}
@@ -62,6 +64,7 @@ export const CommunicationPhoneNumberList = () => (
 
       <FunctionField
         label="Subscriber"
+        sortBy="subscriber.firstName"
         render={({
           subscriber: { id, firstName, middleName, lastName },
         }: CommunicationPhoneNumber) => {
