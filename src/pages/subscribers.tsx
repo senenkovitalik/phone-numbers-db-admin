@@ -11,7 +11,14 @@ import {
   SimpleShowLayout,
   ShowButton,
   SearchInput,
+  ArrayField,
+  SingleFieldList,
+  Link,
+  FunctionField,
 } from "react-admin";
+import ListComponent from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import { Location } from "./types";
 
 const subscriberFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -27,6 +34,19 @@ export const SubscriberList = () => (
       <TextField source="firstName" />
       <TextField source="middleName" />
       <TextField source="lastName" />
+      <ArrayField source="locations" sortable={false}>
+        <SingleFieldList linkType={false} component={ListComponent}>
+          <FunctionField
+            render={({ id, name }: Location) => {
+              return (
+                <ListItem disablePadding>
+                  <Link to={`/locations/${id}/show`}>{name}</Link>
+                </ListItem>
+              );
+            }}
+          />
+        </SingleFieldList>
+      </ArrayField>
       <EditButton />
       <ShowButton />
     </Datagrid>
