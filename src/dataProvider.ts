@@ -28,6 +28,16 @@ const fields: { [key: string]: string } = {
     locations {
       id
       name
+      description
+      country
+      region
+      district
+      city
+      street
+      building
+      section
+      floor
+      room
     }
      `,
   communication_types: "id value description",

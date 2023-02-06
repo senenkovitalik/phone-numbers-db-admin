@@ -9,6 +9,16 @@ export interface CommunicationPhoneNumber {
 export interface Location {
   id: string;
   name: string;
+  description: string;
+  country: string;
+  region: string;
+  district: string;
+  city: string;
+  street: string;
+  building: string;
+  section: string;
+  floor: string;
+  room: string;
 }
 
 export interface Subscriber {

@@ -60,6 +60,40 @@ export const SubscriberShow = () => (
       <TextField source="firstName" />
       <TextField source="middleName" />
       <TextField source="lastName" />
+      <ArrayField source="locations">
+        <SingleFieldList linkType={false} component={ListComponent}>
+          <FunctionField
+            render={({
+              name,
+              country,
+              region,
+              city,
+              district,
+              street,
+              building,
+              section,
+              floor,
+              room,
+            }: Location) => {
+              return (
+                <ListItem disableGutters>
+                  <span>
+                    {name} {country && `${country}, `}
+                    {region && `${region}, `}
+                    {city && `${city}, `}
+                    {district && `${district}, `}
+                    {street && `${street}, `}
+                    {building && `${building}, `}
+                    {section && `${section}, `}
+                    {floor && `${floor}, `}
+                    {room && `${room}, `}
+                  </span>
+                </ListItem>
+              );
+            }}
+          />
+        </SingleFieldList>
+      </ArrayField>
     </SimpleShowLayout>
   </Show>
 );
