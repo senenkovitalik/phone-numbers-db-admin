@@ -2,7 +2,6 @@ import {
   Datagrid,
   List,
   TextField,
-  Edit,
   SimpleForm,
   TextInput,
   EditButton,
@@ -15,7 +14,12 @@ import {
   SingleFieldList,
   Link,
   FunctionField,
+  ReferenceArrayInput,
+  SelectArrayInput,
+  useEditController,
 } from "react-admin";
+import { SubmitHandler, FieldValues } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import ListComponent from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import { Location } from "./types";
@@ -98,16 +102,48 @@ export const SubscriberShow = () => (
   </Show>
 );
 
-export const SubscriberEdit = () => (
-  <Edit>
-    <SimpleForm>
+export const SubscriberEdit = () => {
+  const { id } = useParams();
+
+  const { record, save, isLoading } = useEditController({
+    resource: "subscribers",
+    id,
+  });
+
+  if (isLoading) return null;
+
+  const newrecord = Object.entries(record).reduce(
+    (accumulator, currentValue) => {
+      const [key, value] = currentValue;
+      if (key === "locations") {
+        return {
+          ...accumulator,
+          [key]: (value as Location[]).map(({ id }: Location) => id),
+        };
+      }
+      return {
+        ...accumulator,
+        [key]: value,
+      };
+    },
+    {}
+  );
+
+  return (
+    <SimpleForm
+      record={newrecord}
+      onSubmit={save as SubmitHandler<FieldValues> | undefined}
+    >
       <TextInput source="id" disabled />
       <TextInput source="firstName" />
       <TextInput source="middleName" />
       <TextInput source="lastName" />
+      <ReferenceArrayInput source="locations" reference="locations">
+        <SelectArrayInput />
+      </ReferenceArrayInput>
     </SimpleForm>
-  </Edit>
-);
+  );
+};
 
 export const SubscriberCreate = () => (
   <Create>
