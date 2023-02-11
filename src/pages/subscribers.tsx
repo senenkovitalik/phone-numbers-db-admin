@@ -135,9 +135,9 @@ export const SubscriberEdit = () => {
       onSubmit={save as SubmitHandler<FieldValues> | undefined}
     >
       <TextInput source="id" disabled />
-      <TextInput source="firstName" />
-      <TextInput source="middleName" />
-      <TextInput source="lastName" />
+      <TextInput source="firstName" required />
+      <TextInput source="middleName" required />
+      <TextInput source="lastName" required />
       <ReferenceArrayInput source="locations" reference="locations">
         <SelectArrayInput />
       </ReferenceArrayInput>
