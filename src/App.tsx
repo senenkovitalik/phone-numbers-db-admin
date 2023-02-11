@@ -1,4 +1,4 @@
-import { Admin, Resource, TextInput } from "react-admin";
+import { Admin, Resource } from "react-admin";
 import GroupsIcon from "@mui/icons-material/Groups";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import NumbersIcon from "@mui/icons-material/Numbers";

@@ -20,7 +20,26 @@ const client = new ApolloClient({
 });
 
 const fields: { [key: string]: string } = {
-  subscribers: "id firstName middleName lastName",
+  subscribers: `
+    id
+    firstName
+    middleName
+    lastName
+    locations {
+      id
+      name
+      description
+      country
+      region
+      district
+      city
+      street
+      building
+      section
+      floor
+      room
+    }
+     `,
   communication_types: "id value description",
   communication_phone_numbers: `
     id
