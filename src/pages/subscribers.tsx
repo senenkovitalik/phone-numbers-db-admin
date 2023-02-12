@@ -17,6 +17,8 @@ import {
   ReferenceArrayInput,
   SelectArrayInput,
   useEditController,
+  ReferenceInput,
+  SelectInput,
 } from "react-admin";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -29,6 +31,9 @@ const subscriberFilters = [
   <TextInput label="First Name" source="firstName" />,
   <TextInput label="Middle Name" source="middleName" />,
   <TextInput label="Last Name" source="lastName" />,
+  <ReferenceInput label="Location" source="locations" reference="locations">
+    <SelectInput optionText={({ name }: Location) => name} />
+  </ReferenceInput>,
 ];
 
 export const SubscriberList = () => (
