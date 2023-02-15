@@ -23,7 +23,7 @@ import {
   CommunicationPhoneNumberList,
   CommunicationPhoneNumberShow,
 } from "./pages/communicationPhoneNembers";
-import { LocationEdit, LocationList, LocationShow } from "./pages/locations";
+import { LocationCreate, LocationEdit, LocationList, LocationShow } from "./pages/locations";
 
 const App = () => (
   <Admin dataProvider={dataProvider}>
@@ -56,6 +56,7 @@ const App = () => (
       list={LocationList}
       show={LocationShow}
       edit={LocationEdit}
+      create={LocationCreate}
       icon={LocationCityIcon}
     />
   </Admin>
