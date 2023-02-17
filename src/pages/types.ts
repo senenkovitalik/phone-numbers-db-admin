@@ -7,18 +7,18 @@ export interface CommunicationPhoneNumber {
 }
 
 export interface Location {
-  id: string;
+  id: number;
   name: string;
-  description: string;
-  country: string;
-  region: string;
-  district: string;
-  city: string;
-  street: string;
-  building: string;
-  section: string;
-  floor: string;
-  room: string;
+  description: string | null;
+  country: string | null;
+  region: string | null;
+  district: string | null;
+  city: string | null;
+  street: string | null;
+  building: string | null;
+  section: string | null;
+  floor: string | null;
+  room: string | null;
 }
 
 export interface Subscriber {
