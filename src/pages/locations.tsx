@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Datagrid,
   List,
@@ -18,7 +17,7 @@ import {
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { required } from "ra-core";
 import _ from "lodash";
-import { Location } from "./types";
+import { DisabledFields, GetListI, Location } from "./types";
 import { getMapOfDisabledFields } from "../utils";
 
 export const LocationList = () => (
@@ -79,104 +78,27 @@ export const LocationShow = () => (
   </Show>
 );
 
-interface GetListI {
-  data: Location[] | undefined;
-  isLoading: boolean;
-}
-
-const locations = [
-  {
-    id: 4,
-    name: "BANDALONG",
-    description: null,
-    country: "Ukraine",
-    region: "Lviv",
-    district: "Lviv",
-    city: null,
-    street: "Bandery",
-    building: "1",
-    section: null,
-    floor: null,
-    room: null,
-    __typename: "Location",
-  },
-  {
-    id: 3,
-    name: "ARRAKEEN",
-    description: null,
-    country: "Ukraine",
-    region: "Poltava",
-    district: "Poltava",
-    city: null,
-    street: "Bohuna",
-    building: "15",
-    section: null,
-    floor: null,
-    room: null,
-    __typename: "Location",
-  },
-  {
-    id: 2,
-    name: "KALADAN",
-    description: null,
-    country: "Ukraine",
-    region: "Rivne",
-    district: "Rivne",
-    city: null,
-    street: "Petra Mohily",
-    building: "5",
-    section: null,
-    floor: null,
-    room: null,
-    __typename: "Location",
-  },
-  {
-    id: 1,
-    name: "ARRAKIS",
-    description: null,
-    country: "Ukraine",
-    region: "Zhytomir",
-    district: null,
-    city: "Yaropovichi",
-    street: "Sichovich Striltciv",
-    building: "45",
-    section: null,
-    floor: null,
-    room: null,
-    __typename: "Location",
-  },
-];
-
 export const LocationCreate = () => {
-  const [currentLocation, setParentLocation] = useState<Location | null>(null);
-  const { save } = useCreateController({ resource: "locations" });
+  const { save } = useCreateController({
+    resource: "locations",
+    transform: (data) => _.omit(data, "type"),
+  });
 
-  // const { data, isLoading }: GetListI = useGetList("locations", {
-  //   filter: { parentId: null },
-  // });
+  const { data, isLoading }: GetListI = useGetList("locations", {
+    filter: { parentId: null },
+  });
 
-  // if (isLoading) return null;
+  if (isLoading) return null;
 
-  // const choices = data ? data : [];
-
-  const disabledFields: {
-    [key in keyof Location]?: boolean;
-  } = currentLocation ? getMapOfDisabledFields(currentLocation) : {};
+  const locations = data ? data : [];
 
   return (
-    <SimpleForm
-      onSubmit={save as SubmitHandler<FieldValues> | undefined}
-      record={_.omit(currentLocation, "name")}
-    >
+    <SimpleForm onSubmit={save as SubmitHandler<FieldValues>}>
       <CheckboxGroupInput
         source="type"
         choices={[{ id: "parent", name: "Parent" }]}
-        onChange={(choices) => {
-          if (!(choices as string[]).includes("parent")) {
-            setParentLocation(null);
-          }
-        }}
       />
+
       <FormDataConsumer>
         {({ formData, ...rest }) => {
           const isDisabled =
@@ -189,17 +111,14 @@ export const LocationCreate = () => {
                 choices={locations}
                 optionText="name"
                 disabled={isDisabled}
-                validate={required()}
-                onChange={({ target: { value } }) => {
-                  const l = locations.find(({ id }) => id === value);
-                  setParentLocation(l ? l : null);
-                }}
+                validate={!isDisabled ? required() : undefined}
                 {...rest}
               />
               <TextInput
                 source="name"
                 label="Parent location name"
                 disabled={!isDisabled}
+                validate={isDisabled ? required() : undefined}
               />
             </>
           );
@@ -208,42 +127,85 @@ export const LocationCreate = () => {
 
       <TextInput source="description" />
 
-      <TextInput
-        source="country"
-        disabled={disabledFields && disabledFields.country}
-      />
-      <TextInput
-        source="region"
-        disabled={disabledFields && disabledFields.region}
-      />
-      <TextInput
-        source="district"
-        disabled={disabledFields && disabledFields.district}
-      />
-      <TextInput
-        source="city"
-        disabled={disabledFields && disabledFields.city}
-      />
-      <TextInput
-        source="street"
-        disabled={disabledFields && disabledFields.street}
-      />
-      <TextInput
-        source="building"
-        disabled={disabledFields && disabledFields.building}
-      />
-      <TextInput
-        source="section"
-        disabled={disabledFields && disabledFields.section}
-      />
-      <TextInput
-        source="floor"
-        disabled={disabledFields && disabledFields.floor}
-      />
-      <TextInput
-        source="room"
-        disabled={disabledFields && disabledFields.room}
-      />
+      <FormDataConsumer>
+        {({ formData, ...rest }) => {
+          const { type, parentId } = formData;
+
+          const isLocationSet = !(
+            Array.isArray(type) && type.includes("parent")
+          );
+
+          const location =
+            isLocationSet &&
+            (locations.find(({ id }) => id === parentId) as Location);
+
+          const disabledFields: DisabledFields = location
+            ? getMapOfDisabledFields(location)
+            : {};
+
+          const getFieldDefaultValue = (field: keyof Location) =>
+            location ? location[field] : undefined;
+
+          return (
+            <>
+              <TextInput
+                source="country"
+                disabled={disabledFields && disabledFields.country}
+                defaultValue={getFieldDefaultValue("country")}
+                {...rest}
+              />
+              <TextInput
+                source="region"
+                disabled={disabledFields && disabledFields.region}
+                defaultValue={getFieldDefaultValue("region")}
+                {...rest}
+              />
+              <TextInput
+                source="district"
+                disabled={disabledFields && disabledFields.district}
+                defaultValue={getFieldDefaultValue("district")}
+                {...rest}
+              />
+              <TextInput
+                source="city"
+                disabled={disabledFields && disabledFields.city}
+                defaultValue={getFieldDefaultValue("city")}
+                {...rest}
+              />
+              <TextInput
+                source="street"
+                disabled={disabledFields && disabledFields.street}
+                defaultValue={getFieldDefaultValue("street")}
+                {...rest}
+              />
+              <TextInput
+                source="building"
+                disabled={disabledFields && disabledFields.building}
+                defaultValue={getFieldDefaultValue("building")}
+                {...rest}
+              />
+              <TextInput
+                source="section"
+                disabled={disabledFields && disabledFields.section}
+                defaultValue={getFieldDefaultValue("section")}
+                {...rest}
+              />
+              <TextInput
+                source="floor"
+                disabled={disabledFields && disabledFields.floor}
+                defaultValue={getFieldDefaultValue("floor")}
+                {...rest}
+              />
+              <TextInput
+                source="room"
+                disabled={disabledFields && disabledFields.room}
+                defaultValue={getFieldDefaultValue("room")}
+                {...rest}
+              />
+            </>
+          );
+        }}
+      </FormDataConsumer>
     </SimpleForm>
   );
 };

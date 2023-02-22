@@ -32,3 +32,12 @@ export interface CommunicationType {
   id: string;
   value: string;
 }
+
+export interface GetListI {
+  data: Location[] | undefined;
+  isLoading: boolean;
+}
+
+export type DisabledFields = {
+  [key in keyof Location]?: boolean;
+};
