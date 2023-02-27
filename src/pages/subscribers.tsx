@@ -19,12 +19,23 @@ import {
   useEditController,
   ReferenceInput,
   SelectInput,
+  ListGuesser,
+  useRecordContext,
+  required,
+  ArrayInput,
+  NumberInput,
+  SimpleFormIterator,
+  useCreateController,
+  useGetList,
+  FormDataConsumer,
 } from "react-admin";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import ListComponent from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { Location } from "./types";
+import { Location, Human, GetListI, DisabledFields } from "./types";
+import _ from "lodash";
+import { getMapOfDisabledFields } from "../utils";
 
 const subscriberFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -36,14 +47,30 @@ const subscriberFilters = [
   </ReferenceInput>,
 ];
 
+const FullNameField = () => {
+  const { human }: { human: Human | null } = useRecordContext();
+
+  if (human) {
+    const { id, firstName, middleName, lastName } = human;
+
+    return (
+      <Link to={`/humans/${id}/show`}>
+        {firstName} {middleName} {lastName}
+      </Link>
+    );
+  }
+  return null;
+};
+
 export const SubscriberList = () => (
-  <List filters={subscriberFilters}>
+  <List /*filters={subscriberFilters}*/>
     <Datagrid>
       <TextField source="id" />
-      <TextField source="firstName" />
-      <TextField source="middleName" />
-      <TextField source="lastName" />
-      <ArrayField source="locations" sortable={false}>
+      <TextField source="position" />
+      <FullNameField />
+      <TextField source="description" />
+
+      {/* <ArrayField source="locations" sortable={false}>
         <SingleFieldList linkType={false} component={ListComponent}>
           <FunctionField
             render={({ id, name }: Location) => {
@@ -55,9 +82,9 @@ export const SubscriberList = () => (
             }}
           />
         </SingleFieldList>
-      </ArrayField>
-      <EditButton />
-      <ShowButton />
+      </ArrayField> */}
+      {/* <EditButton /> */}
+      {/* <ShowButton /> */}
     </Datagrid>
   </List>
 );
@@ -150,19 +177,107 @@ export const SubscriberEdit = () => {
   );
 };
 
-export const SubscriberCreate = () => (
-  <Create>
-    <SimpleForm
-      defaultValues={{
-        locations: [],
-      }}
-    >
-      <TextInput source="firstName" required />
-      <TextInput source="middleName" required />
-      <TextInput source="lastName" required />
-      <ReferenceArrayInput source="locations" reference="locations">
-        <SelectArrayInput />
-      </ReferenceArrayInput>
+export const SubscriberCreate = () => {
+  const { save } = useCreateController({
+    resource: "locations",
+    transform: (data) => _.omit(data, "type"),
+  });
+
+  const { data, isLoading }: GetListI = useGetList("locations", {
+    filter: { parentId: null },
+  });
+
+  if (isLoading) return null;
+
+  const locations = data ? data : [];
+
+  return (
+    <SimpleForm onSubmit={save as SubmitHandler<FieldValues>}>
+      <ReferenceInput source="human" reference="humans">
+        <SelectInput
+          optionText={(human: Human) =>
+            `${human.firstName} ${human.middleName} ${human.lastName}`
+          }
+          validate={required()}
+        />
+      </ReferenceInput>
+
+      <ArrayInput source="locations">
+        <SimpleFormIterator>
+          <SelectInput
+            source="parentId"
+            choices={locations}
+            optionText="name"
+            validate={required()}
+          />
+          <TextInput source="name" />
+          <TextInput source="description" />
+          <FormDataConsumer>
+            {({ formData, scopedFormData, getSource }) => {
+              const location = (locations as Location[]).find(
+                ({ id }) => id === scopedFormData.parentId
+              );
+
+              const disabledFields: DisabledFields = location
+                ? getMapOfDisabledFields(location)
+                : {};
+
+              const getFieldDefaultValue = (field: keyof Location) =>
+                location ? location[field] : undefined;
+
+              return (
+                <>
+                  <TextInput
+                    source={(getSource && getSource("country")) as string}
+                    disabled={disabledFields && disabledFields.country}
+                    defaultValue={getFieldDefaultValue("country")}
+                  />
+                  <TextInput
+                    source="region"
+                    disabled={disabledFields && disabledFields.region}
+                    defaultValue={getFieldDefaultValue("region")}
+                  />
+                  <TextInput
+                    source="district"
+                    disabled={disabledFields && disabledFields.district}
+                    defaultValue={getFieldDefaultValue("district")}
+                  />
+                  <TextInput
+                    source="city"
+                    disabled={disabledFields && disabledFields.city}
+                    defaultValue={getFieldDefaultValue("city")}
+                  />
+                  <TextInput
+                    source="street"
+                    disabled={disabledFields && disabledFields.street}
+                    defaultValue={getFieldDefaultValue("street")}
+                  />
+                  <TextInput
+                    source="building"
+                    disabled={disabledFields && disabledFields.building}
+                    defaultValue={getFieldDefaultValue("building")}
+                  />
+                  <TextInput
+                    source="section"
+                    disabled={disabledFields && disabledFields.section}
+                    defaultValue={getFieldDefaultValue("section")}
+                  />
+                  <TextInput
+                    source="floor"
+                    disabled={disabledFields && disabledFields.floor}
+                    defaultValue={getFieldDefaultValue("floor")}
+                  />
+                  <TextInput
+                    source={(getSource && getSource("room")) as string}
+                    disabled={disabledFields && disabledFields.room}
+                    defaultValue={getFieldDefaultValue("room")}
+                  />
+                </>
+              );
+            }}
+          </FormDataConsumer>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
-  </Create>
-);
+  );
+};

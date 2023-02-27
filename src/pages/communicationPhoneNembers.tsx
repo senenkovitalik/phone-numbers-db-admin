@@ -66,7 +66,7 @@ export const CommunicationPhoneNumberList = () => (
         label="Subscriber"
         sortBy="subscriber.firstName"
         render={({
-          subscriber: { id, firstName, middleName, lastName },
+          subscriber: { id },
         }: CommunicationPhoneNumber) => {
           return (
             <Link to={`/subscribers/${id}/show`}>
