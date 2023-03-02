@@ -34,6 +34,11 @@ const fields: { [key: string]: string } = {
       middleName
       lastName
     }
+    locations {
+      id
+      name
+      country
+    }
     position
     description
      `,
@@ -93,13 +98,19 @@ export const dataProvider: DataProvider = {
           limit: perPage,
           offset: (page - 1) * perPage,
           order_by: { field: field, order: order.toLowerCase() },
-          where: Object.keys(filter).reduce(
-            (prev, key) => ({
+          where: Object.keys(filter).reduce((prev, key) => {
+            if (Array.isArray(filter[key])) {
+              return {
+                ...prev,
+                [key]: { _in: filter[key] },
+              };
+            }
+
+            return {
               ...prev,
               [key]: { _eq: filter[key] },
-            }),
-            {}
-          ),
+            };
+          }, {}),
         },
       })
       .then((result) => ({

@@ -38,13 +38,17 @@ import _ from "lodash";
 import { getMapOfDisabledFields } from "../utils";
 
 const subscriberFilters = [
-  <SearchInput source="q" alwaysOn />,
-  <TextInput label="First Name" source="firstName" />,
-  <TextInput label="Middle Name" source="middleName" />,
-  <TextInput label="Last Name" source="lastName" />,
-  <ReferenceInput label="Location" source="locations" reference="locations">
-    <SelectInput optionText={({ name }: Location) => name} />
-  </ReferenceInput>,
+  // <SearchInput source="q" alwaysOn />,
+  // <TextInput label="First Name" source="firstName" />,
+  // <TextInput label="Middle Name" source="middleName" />,
+  // <TextInput label="Last Name" source="lastName" />,
+  <ReferenceArrayInput
+    label="Location"
+    source="locations"
+    reference="locations"
+  >
+    <SelectArrayInput optionText={({ name }: Location) => name} />
+  </ReferenceArrayInput>,
 ];
 
 const FullNameField = () => {
@@ -63,26 +67,28 @@ const FullNameField = () => {
 };
 
 export const SubscriberList = () => (
-  <List /*filters={subscriberFilters}*/>
+  <List filters={subscriberFilters}>
     <Datagrid>
       <TextField source="id" />
       <TextField source="position" />
       <FullNameField />
       <TextField source="description" />
 
-      {/* <ArrayField source="locations" sortable={false}>
+      <ArrayField source="locations" sortable={false}>
         <SingleFieldList linkType={false} component={ListComponent}>
           <FunctionField
-            render={({ id, name }: Location) => {
+            render={({ id, name, country }: Location) => {
               return (
                 <ListItem disablePadding>
-                  <Link to={`/locations/${id}/show`}>{name}</Link>
+                  <Link to={`/locations/${id}/show`}>
+                    {id} {name} {country}
+                  </Link>
                 </ListItem>
               );
             }}
           />
         </SingleFieldList>
-      </ArrayField> */}
+      </ArrayField>
       {/* <EditButton /> */}
       {/* <ShowButton /> */}
     </Datagrid>
@@ -179,7 +185,7 @@ export const SubscriberEdit = () => {
 
 export const SubscriberCreate = () => {
   const { save } = useCreateController({
-    resource: "locations",
+    resource: "subscribers",
     transform: (data) => _.omit(data, "type"),
   });
 
@@ -193,7 +199,11 @@ export const SubscriberCreate = () => {
 
   return (
     <SimpleForm onSubmit={save as SubmitHandler<FieldValues>}>
-      <ReferenceInput source="human" reference="humans">
+      <ReferenceInput
+        source="humanId"
+        reference="humans"
+        filter={{ locations: { id: null } }}
+      >
         <SelectInput
           optionText={(human: Human) =>
             `${human.firstName} ${human.middleName} ${human.lastName}`
@@ -203,17 +213,19 @@ export const SubscriberCreate = () => {
       </ReferenceInput>
 
       <ArrayInput source="locations">
-        <SimpleFormIterator>
+        <SimpleFormIterator disableReordering>
           <SelectInput
             source="parentId"
             choices={locations}
             optionText="name"
             validate={required()}
           />
+
           <TextInput source="name" />
           <TextInput source="description" />
+
           <FormDataConsumer>
-            {({ formData, scopedFormData, getSource }) => {
+            {({ scopedFormData, getSource }) => {
               const location = (locations as Location[]).find(
                 ({ id }) => id === scopedFormData.parentId
               );
@@ -225,50 +237,53 @@ export const SubscriberCreate = () => {
               const getFieldDefaultValue = (field: keyof Location) =>
                 location ? location[field] : undefined;
 
+              const getSourceValue = (field: keyof Location): string =>
+                (getSource && getSource(field)) as string;
+
               return (
                 <>
                   <TextInput
-                    source={(getSource && getSource("country")) as string}
+                    source={getSourceValue("country")}
                     disabled={disabledFields && disabledFields.country}
                     defaultValue={getFieldDefaultValue("country")}
                   />
                   <TextInput
-                    source="region"
+                    source={getSourceValue("region")}
                     disabled={disabledFields && disabledFields.region}
                     defaultValue={getFieldDefaultValue("region")}
                   />
                   <TextInput
-                    source="district"
+                    source={getSourceValue("district")}
                     disabled={disabledFields && disabledFields.district}
                     defaultValue={getFieldDefaultValue("district")}
                   />
                   <TextInput
-                    source="city"
+                    source={getSourceValue("city")}
                     disabled={disabledFields && disabledFields.city}
                     defaultValue={getFieldDefaultValue("city")}
                   />
                   <TextInput
-                    source="street"
+                    source={getSourceValue("street")}
                     disabled={disabledFields && disabledFields.street}
                     defaultValue={getFieldDefaultValue("street")}
                   />
                   <TextInput
-                    source="building"
+                    source={getSourceValue("building")}
                     disabled={disabledFields && disabledFields.building}
                     defaultValue={getFieldDefaultValue("building")}
                   />
                   <TextInput
-                    source="section"
+                    source={getSourceValue("section")}
                     disabled={disabledFields && disabledFields.section}
                     defaultValue={getFieldDefaultValue("section")}
                   />
                   <TextInput
-                    source="floor"
+                    source={getSourceValue("floor")}
                     disabled={disabledFields && disabledFields.floor}
                     defaultValue={getFieldDefaultValue("floor")}
                   />
                   <TextInput
-                    source={(getSource && getSource("room")) as string}
+                    source={getSourceValue("room")}
                     disabled={disabledFields && disabledFields.room}
                     defaultValue={getFieldDefaultValue("room")}
                   />
