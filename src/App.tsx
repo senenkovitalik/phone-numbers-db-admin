@@ -38,7 +38,7 @@ const App = () => (
       name="subscribers"
       list={SubscriberList}
       // show={SubscriberShow}
-      // edit={SubscriberEdit}
+      edit={SubscriberEdit}
       create={SubscriberCreate}
       icon={GroupsIcon}
     />

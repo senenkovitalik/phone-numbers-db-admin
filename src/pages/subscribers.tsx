@@ -106,7 +106,7 @@ export const SubscriberList = () => (
           />
         </SingleFieldList>
       </ArrayField>
-      {/* <EditButton /> */}
+      <EditButton />
       {/* <ShowButton /> */}
     </Datagrid>
   </List>
@@ -160,20 +160,37 @@ export const SubscriberShow = () => (
 export const SubscriberEdit = () => {
   const { id } = useParams();
 
-  const { record, save, isLoading } = useEditController({
+  const {
+    record,
+    save,
+    isLoading: isLoadingSubscriber,
+  } = useEditController({
     resource: "subscribers",
     id,
   });
 
-  if (isLoading) return null;
+  const { data, isLoading: isLoadingLocations }: GetListI = useGetList(
+    "locations",
+    {
+      filter: { parentId: null },
+    }
+  );
+
+  if (isLoadingLocations || isLoadingSubscriber) return null;
 
   const newrecord = Object.entries(record).reduce(
     (accumulator, currentValue) => {
       const [key, value] = currentValue;
-      if (key === "locations") {
+      if (key === "locations" && Array.isArray(value) && value.length >= 1) {
         return {
           ...accumulator,
           [key]: (value as Location[]).map(({ id }: Location) => id),
+        };
+      }
+      if (key === "human") {
+        return {
+          ...accumulator,
+          humanId: (value as Human).id,
         };
       }
       return {
@@ -184,18 +201,110 @@ export const SubscriberEdit = () => {
     {}
   );
 
+  const locations = data ? data : [];
+
   return (
     <SimpleForm
       record={newrecord}
       onSubmit={save as SubmitHandler<FieldValues> | undefined}
     >
-      <TextInput source="id" disabled />
-      <TextInput source="firstName" required />
-      <TextInput source="middleName" required />
-      <TextInput source="lastName" required />
-      <ReferenceArrayInput source="locations" reference="locations">
-        <SelectArrayInput />
-      </ReferenceArrayInput>
+      <TextInput source="position" />
+      <TextInput source="description" />
+      <ReferenceInput
+        source="humanId"
+        reference="humans"
+        filter={{ subscriber: { id: parseInt(id as string) } }}
+        sort={{ field: "firstName", order: "ASC" }}
+      >
+        {/* replace by AutocompleteInput */}
+        <SelectInput
+          optionText={({ firstName, middleName, lastName }: Human) =>
+            `${firstName} ${middleName} ${lastName}`
+          }
+        />
+      </ReferenceInput>
+
+      <ArrayInput source="locations">
+        <SimpleFormIterator disableReordering>
+          <SelectInput
+            source="parentId"
+            choices={locations}
+            optionText="name"
+            validate={required()}
+          />
+
+          <TextInput source="name" />
+          <TextInput source="description" />
+
+          <FormDataConsumer>
+            {({ scopedFormData, getSource }) => {
+              const location = (locations as Location[]).find(
+                ({ id }) => id === scopedFormData.parentId
+              );
+
+              const disabledFields: DisabledFields = location
+                ? getMapOfDisabledFields(location)
+                : {};
+
+              const getFieldDefaultValue = (field: keyof Location) =>
+                location ? location[field] : undefined;
+
+              const getSourceValue = (field: keyof Location): string =>
+                (getSource && getSource(field)) as string;
+
+              return (
+                <>
+                  <TextInput
+                    source={getSourceValue("country")}
+                    disabled={disabledFields && disabledFields.country}
+                    defaultValue={getFieldDefaultValue("country")}
+                  />
+                  <TextInput
+                    source={getSourceValue("region")}
+                    disabled={disabledFields && disabledFields.region}
+                    defaultValue={getFieldDefaultValue("region")}
+                  />
+                  <TextInput
+                    source={getSourceValue("district")}
+                    disabled={disabledFields && disabledFields.district}
+                    defaultValue={getFieldDefaultValue("district")}
+                  />
+                  <TextInput
+                    source={getSourceValue("city")}
+                    disabled={disabledFields && disabledFields.city}
+                    defaultValue={getFieldDefaultValue("city")}
+                  />
+                  <TextInput
+                    source={getSourceValue("street")}
+                    disabled={disabledFields && disabledFields.street}
+                    defaultValue={getFieldDefaultValue("street")}
+                  />
+                  <TextInput
+                    source={getSourceValue("building")}
+                    disabled={disabledFields && disabledFields.building}
+                    defaultValue={getFieldDefaultValue("building")}
+                  />
+                  <TextInput
+                    source={getSourceValue("section")}
+                    disabled={disabledFields && disabledFields.section}
+                    defaultValue={getFieldDefaultValue("section")}
+                  />
+                  <TextInput
+                    source={getSourceValue("floor")}
+                    disabled={disabledFields && disabledFields.floor}
+                    defaultValue={getFieldDefaultValue("floor")}
+                  />
+                  <TextInput
+                    source={getSourceValue("room")}
+                    disabled={disabledFields && disabledFields.room}
+                    defaultValue={getFieldDefaultValue("room")}
+                  />
+                </>
+              );
+            }}
+          </FormDataConsumer>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   );
 };
