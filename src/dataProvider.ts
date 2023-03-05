@@ -37,7 +37,17 @@ const fields: { [key: string]: string } = {
     locations {
       id
       name
+      description
       country
+      region
+      district
+      city
+      street
+      building
+      section
+      floor
+      room
+      parentId
     }
     position
     description
@@ -77,6 +87,34 @@ const fields: { [key: string]: string } = {
   `,
 };
 
+function isObject(val: unknown) {
+  if (val === null) {
+    return false;
+  }
+  if (typeof val === "function") return false;
+  return typeof val === "object";
+}
+
+function changeFilter(obj: { [key: string]: any }) {
+  const keys = Object.keys(obj);
+
+  if (keys.length) {
+    keys.forEach((key) => {
+      if (isObject(obj[key])) {
+        changeFilter(obj[key]);
+      } else {
+        const value = obj[key];
+
+        if (Array.isArray(value)) {
+          obj[key] = { _in: value };
+        } else {
+          obj[key] = { _eq: value };
+        }
+      }
+    });
+  }
+}
+
 export const dataProvider: DataProvider = {
   getList: (resource, { sort, pagination, filter }) => {
     const { field, order } = sort;
@@ -98,19 +136,13 @@ export const dataProvider: DataProvider = {
           limit: perPage,
           offset: (page - 1) * perPage,
           order_by: { field: field, order: order.toLowerCase() },
-          where: Object.keys(filter).reduce((prev, key) => {
-            if (Array.isArray(filter[key])) {
-              return {
-                ...prev,
-                [key]: { _in: filter[key] },
-              };
-            }
+          where: (() => {
+            const copy = Object.assign({}, filter);
 
-            return {
-              ...prev,
-              [key]: { _eq: filter[key] },
-            };
-          }, {}),
+            changeFilter(copy);
+
+            return copy;
+          })(),
         },
       })
       .then((result) => ({

@@ -77,11 +77,28 @@ export const SubscriberList = () => (
       <ArrayField source="locations" sortable={false}>
         <SingleFieldList linkType={false} component={ListComponent}>
           <FunctionField
-            render={({ id, name, country }: Location) => {
+            render={({
+              id,
+              name,
+              country,
+              region,
+              district,
+              city,
+              street,
+              building,
+              section,
+              floor,
+              room,
+              description,
+              parentId,
+            }: Location) => {
               return (
                 <ListItem disablePadding>
                   <Link to={`/locations/${id}/show`}>
-                    {id} {name} {country}
+                    id: {id} {name} {country} {region} {district} {city}{" "}
+                    {street} {building} {section} {floor} {room}
+                    {parentId && `parentId: ${parentId}`}
+                    {description && `(description: ${description})`}
                   </Link>
                 </ListItem>
               );
@@ -189,6 +206,16 @@ export const SubscriberCreate = () => {
     transform: (data) => _.omit(data, "type"),
   });
 
+  const validateForm = (values: FieldValues) => {
+    const errors: { humanId?: string; position?: string } = {};
+
+    if (!values.humanId && !values.position) {
+      errors.humanId = "Human or Position required";
+    }
+
+    return errors;
+  };
+
   const { data, isLoading }: GetListI = useGetList("locations", {
     filter: { parentId: null },
   });
@@ -198,17 +225,23 @@ export const SubscriberCreate = () => {
   const locations = data ? data : [];
 
   return (
-    <SimpleForm onSubmit={save as SubmitHandler<FieldValues>}>
+    <SimpleForm
+      onSubmit={save as SubmitHandler<FieldValues>}
+      validate={validateForm}
+    >
+      <TextInput source="position" />
+      <TextInput source="description" />
       <ReferenceInput
         source="humanId"
         reference="humans"
-        filter={{ locations: { id: null } }}
+        filter={{ subscriber: { id: null } }}
+        sort={{ field: "firstName", order: "ASC" }}
       >
+        {/* replace by AutocompleteInput */}
         <SelectInput
-          optionText={(human: Human) =>
-            `${human.firstName} ${human.middleName} ${human.lastName}`
+          optionText={({ firstName, middleName, lastName }: Human) =>
+            `${firstName} ${middleName} ${lastName}`
           }
-          validate={required()}
         />
       </ReferenceInput>
 
