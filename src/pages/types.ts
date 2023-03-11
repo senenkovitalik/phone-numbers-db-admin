@@ -49,3 +49,7 @@ export interface GetListI {
 export type DisabledFields = {
   [key in keyof Location]?: boolean;
 };
+
+export interface ObjectI<T> {
+  [key: string]: T;
+}

@@ -1,6 +1,8 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { DataProvider } from "ra-core";
 import { omit } from "lodash";
+import { transformFilter } from "./utils";
+import { ObjectI } from "./pages/types";
 
 const apiUrl = "http://localhost:3001/graphql";
 
@@ -19,7 +21,7 @@ const client = new ApolloClient({
   },
 });
 
-const fields: { [key: string]: string } = {
+const fields: ObjectI<string> = {
   humans: `
     id
     firstName
@@ -87,38 +89,12 @@ const fields: { [key: string]: string } = {
   `,
 };
 
-function isObject(val: unknown) {
-  if (val === null) {
-    return false;
-  }
-  if (typeof val === "function") return false;
-  return typeof val === "object";
-}
-
-function changeFilter(obj: { [key: string]: any }) {
-  const keys = Object.keys(obj);
-
-  if (keys.length) {
-    keys.forEach((key) => {
-      if (isObject(obj[key])) {
-        changeFilter(obj[key]);
-      } else {
-        const value = obj[key];
-
-        if (Array.isArray(value)) {
-          obj[key] = { _in: value };
-        } else {
-          obj[key] = { _eq: value };
-        }
-      }
-    });
-  }
-}
-
 export const dataProvider: DataProvider = {
   getList: (resource, { sort, pagination, filter }) => {
     const { field, order } = sort;
     const { page, perPage } = pagination;
+    const where = transformFilter(filter);
+
     return client
       .query({
         query: gql`
@@ -136,13 +112,7 @@ export const dataProvider: DataProvider = {
           limit: perPage,
           offset: (page - 1) * perPage,
           order_by: { field: field, order: order.toLowerCase() },
-          where: (() => {
-            const copy = Object.assign({}, filter);
-
-            changeFilter(copy);
-
-            return copy;
-          })(),
+          where,
         },
       })
       .then((result) => ({

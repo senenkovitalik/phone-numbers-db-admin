@@ -1,4 +1,30 @@
-import { Location } from "./pages/types";
+import { Location, ObjectI } from "./pages/types";
+
+export const isObject = (val: unknown): boolean => {
+  if (val === null) {
+    return false;
+  }
+
+  if (typeof val === "function") return false;
+
+  return typeof val === "object";
+};
+
+export const transformFilter = (obj: ObjectI<any>): ObjectI<any> => {
+  let result: ObjectI<any> = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (Array.isArray(value)) {
+      result[key] = { _in: value };
+    } else if (isObject(value)) {
+      result[key] = transformFilter(value);
+    } else {
+      result[key] = { _eq: value };
+    }
+  }
+
+  return result;
+};
 
 export const getMapOfDisabledFields = (location: Location) => {
   const addressOrder = [
