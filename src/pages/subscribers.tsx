@@ -5,11 +5,8 @@ import {
   SimpleForm,
   TextInput,
   EditButton,
-  Create,
   Show,
   SimpleShowLayout,
-  ShowButton,
-  SearchInput,
   ArrayField,
   SingleFieldList,
   Link,
@@ -19,15 +16,14 @@ import {
   useEditController,
   ReferenceInput,
   SelectInput,
-  ListGuesser,
   useRecordContext,
   required,
   ArrayInput,
-  NumberInput,
   SimpleFormIterator,
   useCreateController,
   useGetList,
   FormDataConsumer,
+  DeleteButton,
 } from "react-admin";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -107,7 +103,7 @@ export const SubscriberList = () => (
         </SingleFieldList>
       </ArrayField>
       <EditButton />
-      {/* <ShowButton /> */}
+      <DeleteButton />
     </Datagrid>
   </List>
 );
@@ -167,7 +163,27 @@ export const SubscriberEdit = () => {
   } = useEditController({
     resource: "subscribers",
     id,
+    transform: (data) => {
+      const submitData = _.omit(data, ["type", "human"]);
+
+      if (submitData.locations == null) {
+        submitData.locations = [];
+      }
+
+      return submitData;
+    },
   });
+
+  const validateForm = (values: FieldValues) => {
+    const errors: { humanId?: string; position?: string } = {};
+
+    if (!values.humanId && !values.position) {
+      errors.humanId = "Human or Position required";
+      errors.position = "Human or Position required";
+    }
+
+    return errors;
+  };
 
   const { data, isLoading: isLoadingLocations }: GetListI = useGetList(
     "locations",
@@ -187,12 +203,14 @@ export const SubscriberEdit = () => {
           [key]: (value as Location[]).map(({ id }: Location) => id),
         };
       }
-      if (key === "human") {
+
+      if (key === "human" && value) {
         return {
           ...accumulator,
           humanId: (value as Human).id,
         };
       }
+
       return {
         ...accumulator,
         [key]: value,
@@ -207,14 +225,16 @@ export const SubscriberEdit = () => {
     <SimpleForm
       record={newrecord}
       onSubmit={save as SubmitHandler<FieldValues> | undefined}
+      validate={validateForm}
     >
       <TextInput source="position" />
       <TextInput source="description" />
       <ReferenceInput
         source="humanId"
         reference="humans"
-        filter={{ subscriber: { id: parseInt(id as string) } }}
+        filter={{ subscriber: { id: null } }}
         sort={{ field: "firstName", order: "ASC" }}
+        perPage={0}
       >
         {/* replace by AutocompleteInput */}
         <SelectInput
@@ -252,53 +272,27 @@ export const SubscriberEdit = () => {
               const getSourceValue = (field: keyof Location): string =>
                 (getSource && getSource(field)) as string;
 
+              const restFormFields: Array<keyof Location> = [
+                "country",
+                "region",
+                "district",
+                "city",
+                "street",
+                "building",
+                "section",
+                "floor",
+                "room",
+              ];
+
               return (
                 <>
-                  <TextInput
-                    source={getSourceValue("country")}
-                    disabled={disabledFields && disabledFields.country}
-                    defaultValue={getFieldDefaultValue("country")}
-                  />
-                  <TextInput
-                    source={getSourceValue("region")}
-                    disabled={disabledFields && disabledFields.region}
-                    defaultValue={getFieldDefaultValue("region")}
-                  />
-                  <TextInput
-                    source={getSourceValue("district")}
-                    disabled={disabledFields && disabledFields.district}
-                    defaultValue={getFieldDefaultValue("district")}
-                  />
-                  <TextInput
-                    source={getSourceValue("city")}
-                    disabled={disabledFields && disabledFields.city}
-                    defaultValue={getFieldDefaultValue("city")}
-                  />
-                  <TextInput
-                    source={getSourceValue("street")}
-                    disabled={disabledFields && disabledFields.street}
-                    defaultValue={getFieldDefaultValue("street")}
-                  />
-                  <TextInput
-                    source={getSourceValue("building")}
-                    disabled={disabledFields && disabledFields.building}
-                    defaultValue={getFieldDefaultValue("building")}
-                  />
-                  <TextInput
-                    source={getSourceValue("section")}
-                    disabled={disabledFields && disabledFields.section}
-                    defaultValue={getFieldDefaultValue("section")}
-                  />
-                  <TextInput
-                    source={getSourceValue("floor")}
-                    disabled={disabledFields && disabledFields.floor}
-                    defaultValue={getFieldDefaultValue("floor")}
-                  />
-                  <TextInput
-                    source={getSourceValue("room")}
-                    disabled={disabledFields && disabledFields.room}
-                    defaultValue={getFieldDefaultValue("room")}
-                  />
+                  {restFormFields.map((field) => (
+                    <TextInput
+                      source={getSourceValue(field)}
+                      disabled={disabledFields && disabledFields[field]}
+                      defaultValue={getFieldDefaultValue(field)}
+                    />
+                  ))}
                 </>
               );
             }}
@@ -313,6 +307,7 @@ export const SubscriberCreate = () => {
   const { save } = useCreateController({
     resource: "subscribers",
     transform: (data) => _.omit(data, "type"),
+    redirect: "list",
   });
 
   const validateForm = (values: FieldValues) => {
@@ -345,6 +340,7 @@ export const SubscriberCreate = () => {
         reference="humans"
         filter={{ subscriber: { id: null } }}
         sort={{ field: "firstName", order: "ASC" }}
+        perPage={0}
       >
         {/* replace by AutocompleteInput */}
         <SelectInput
@@ -382,53 +378,27 @@ export const SubscriberCreate = () => {
               const getSourceValue = (field: keyof Location): string =>
                 (getSource && getSource(field)) as string;
 
+              const restFormFields: Array<keyof Location> = [
+                "country",
+                "region",
+                "district",
+                "city",
+                "street",
+                "building",
+                "section",
+                "floor",
+                "room",
+              ];
+
               return (
                 <>
-                  <TextInput
-                    source={getSourceValue("country")}
-                    disabled={disabledFields && disabledFields.country}
-                    defaultValue={getFieldDefaultValue("country")}
-                  />
-                  <TextInput
-                    source={getSourceValue("region")}
-                    disabled={disabledFields && disabledFields.region}
-                    defaultValue={getFieldDefaultValue("region")}
-                  />
-                  <TextInput
-                    source={getSourceValue("district")}
-                    disabled={disabledFields && disabledFields.district}
-                    defaultValue={getFieldDefaultValue("district")}
-                  />
-                  <TextInput
-                    source={getSourceValue("city")}
-                    disabled={disabledFields && disabledFields.city}
-                    defaultValue={getFieldDefaultValue("city")}
-                  />
-                  <TextInput
-                    source={getSourceValue("street")}
-                    disabled={disabledFields && disabledFields.street}
-                    defaultValue={getFieldDefaultValue("street")}
-                  />
-                  <TextInput
-                    source={getSourceValue("building")}
-                    disabled={disabledFields && disabledFields.building}
-                    defaultValue={getFieldDefaultValue("building")}
-                  />
-                  <TextInput
-                    source={getSourceValue("section")}
-                    disabled={disabledFields && disabledFields.section}
-                    defaultValue={getFieldDefaultValue("section")}
-                  />
-                  <TextInput
-                    source={getSourceValue("floor")}
-                    disabled={disabledFields && disabledFields.floor}
-                    defaultValue={getFieldDefaultValue("floor")}
-                  />
-                  <TextInput
-                    source={getSourceValue("room")}
-                    disabled={disabledFields && disabledFields.room}
-                    defaultValue={getFieldDefaultValue("room")}
-                  />
+                  {restFormFields.map((field) => (
+                    <TextInput
+                      source={getSourceValue(field)}
+                      disabled={disabledFields && disabledFields[field]}
+                      defaultValue={getFieldDefaultValue(field)}
+                    />
+                  ))}
                 </>
               );
             }}
