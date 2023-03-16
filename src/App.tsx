@@ -9,7 +9,6 @@ import {
   SubscriberCreate,
   SubscriberEdit,
   SubscriberList,
-  SubscriberShow,
 } from "./pages/subscribers";
 import {
   CommunicationTypeCreate,
@@ -23,12 +22,7 @@ import {
   CommunicationPhoneNumberList,
   CommunicationPhoneNumberShow,
 } from "./pages/communicationPhoneNembers";
-import {
-  LocationCreate,
-  LocationEdit,
-  LocationList,
-  LocationShow,
-} from "./pages/locations";
+import { LocationCreate, LocationList } from "./pages/locations";
 import { HumanList } from "./pages/humans";
 
 const App = () => (
@@ -37,7 +31,6 @@ const App = () => (
     <Resource
       name="subscribers"
       list={SubscriberList}
-      // show={SubscriberShow}
       edit={SubscriberEdit}
       create={SubscriberCreate}
       icon={GroupsIcon}
@@ -61,7 +54,6 @@ const App = () => (
     <Resource
       name="locations"
       list={LocationList}
-      // show={LocationShow}
       // edit={LocationEdit}
       create={LocationCreate}
       icon={LocationCityIcon}

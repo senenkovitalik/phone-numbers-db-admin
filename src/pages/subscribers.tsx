@@ -24,6 +24,7 @@ import {
   useGetList,
   FormDataConsumer,
   DeleteButton,
+  NumberInput,
 } from "react-admin";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -108,51 +109,6 @@ export const SubscriberList = () => (
   </List>
 );
 
-export const SubscriberShow = () => (
-  <Show>
-    <SimpleShowLayout>
-      <TextField source="id" />
-      <TextField source="firstName" />
-      <TextField source="middleName" />
-      <TextField source="lastName" />
-      <ArrayField source="locations">
-        <SingleFieldList linkType={false} component={ListComponent}>
-          <FunctionField
-            render={({
-              name,
-              country,
-              region,
-              city,
-              district,
-              street,
-              building,
-              section,
-              floor,
-              room,
-            }: Location) => {
-              return (
-                <ListItem disableGutters>
-                  <span>
-                    {name} {country && `${country}, `}
-                    {region && `${region}, `}
-                    {city && `${city}, `}
-                    {district && `${district}, `}
-                    {street && `${street}, `}
-                    {building && `${building}, `}
-                    {section && `${section}, `}
-                    {floor && `${floor}, `}
-                    {room && `${room}, `}
-                  </span>
-                </ListItem>
-              );
-            }}
-          />
-        </SingleFieldList>
-      </ArrayField>
-    </SimpleShowLayout>
-  </Show>
-);
-
 export const SubscriberEdit = () => {
   const { id } = useParams();
 
@@ -164,13 +120,20 @@ export const SubscriberEdit = () => {
     resource: "subscribers",
     id,
     transform: (data) => {
-      const submitData = _.omit(data, ["type", "human"]);
+      const submitData = _.pick(data, [
+        "humanId",
+        "position",
+        "description",
+        "locations",
+      ]);
 
-      if (submitData.locations == null) {
-        submitData.locations = [];
-      }
-
-      return submitData;
+      return _.assign(submitData, {
+        locations: Array.isArray(submitData.locations)
+          ? submitData.locations.map((location) =>
+              _.omit(location, ["id", "__typename"])
+            )
+          : null,
+      });
     },
   });
 
@@ -197,12 +160,12 @@ export const SubscriberEdit = () => {
   const newrecord = Object.entries(record).reduce(
     (accumulator, currentValue) => {
       const [key, value] = currentValue;
-      if (key === "locations" && Array.isArray(value) && value.length >= 1) {
-        return {
-          ...accumulator,
-          [key]: (value as Location[]).map(({ id }: Location) => id),
-        };
-      }
+      // if (key === "locations" && Array.isArray(value) && value.length >= 1) {
+      //   return {
+      //     ...accumulator,
+      //     [key]: (value as Location[]).map(({ id }: Location) => id),
+      //   };
+      // }
 
       if (key === "human" && value) {
         return {
@@ -286,8 +249,9 @@ export const SubscriberEdit = () => {
 
               return (
                 <>
-                  {restFormFields.map((field) => (
+                  {restFormFields.map((field, index) => (
                     <TextInput
+                      key={index}
                       source={getSourceValue(field)}
                       disabled={disabledFields && disabledFields[field]}
                       defaultValue={getFieldDefaultValue(field)}
