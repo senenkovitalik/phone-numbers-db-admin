@@ -1,4 +1,4 @@
-import { Admin, ListGuesser, Resource } from "react-admin";
+import { Admin, Resource } from "react-admin";
 import GroupsIcon from "@mui/icons-material/Groups";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import NumbersIcon from "@mui/icons-material/Numbers";
@@ -22,7 +22,7 @@ import {
   CommunicationPhoneNumberList,
   CommunicationPhoneNumberShow,
 } from "./pages/communicationPhoneNembers";
-import { LocationCreate, LocationList } from "./pages/locations";
+import { LocationCreate, LocationEdit, LocationList } from "./pages/locations";
 import { HumanList } from "./pages/humans";
 
 const App = () => (
@@ -54,7 +54,7 @@ const App = () => (
     <Resource
       name="locations"
       list={LocationList}
-      // edit={LocationEdit}
+      edit={LocationEdit}
       create={LocationCreate}
       icon={LocationCityIcon}
     />

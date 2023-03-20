@@ -160,13 +160,6 @@ export const SubscriberEdit = () => {
   const newrecord = Object.entries(record).reduce(
     (accumulator, currentValue) => {
       const [key, value] = currentValue;
-      // if (key === "locations" && Array.isArray(value) && value.length >= 1) {
-      //   return {
-      //     ...accumulator,
-      //     [key]: (value as Location[]).map(({ id }: Location) => id),
-      //   };
-      // }
-
       if (key === "human" && value) {
         return {
           ...accumulator,
