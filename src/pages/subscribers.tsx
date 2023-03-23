@@ -5,8 +5,6 @@ import {
   SimpleForm,
   TextInput,
   EditButton,
-  Show,
-  SimpleShowLayout,
   ArrayField,
   SingleFieldList,
   Link,
@@ -24,7 +22,7 @@ import {
   useGetList,
   FormDataConsumer,
   DeleteButton,
-  NumberInput,
+  UseRecordContextParams,
 } from "react-admin";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -48,8 +46,10 @@ const subscriberFilters = [
   </ReferenceArrayInput>,
 ];
 
-const FullNameField = () => {
-  const { human }: { human: Human | null } = useRecordContext();
+const FullNameField = (
+  props: UseRecordContextParams<{ human: Human | null }> | undefined
+) => {
+  const { human }: { human: Human | null } = useRecordContext(props);
 
   if (human) {
     const { id, firstName, middleName, lastName } = human;
@@ -60,54 +60,74 @@ const FullNameField = () => {
       </Link>
     );
   }
+
   return null;
 };
 
-export const SubscriberList = () => (
-  <List filters={subscriberFilters}>
-    <Datagrid>
-      <TextField source="id" />
-      <TextField source="position" />
-      <FullNameField />
-      <TextField source="description" />
+FullNameField.defaultProps = { label: "Full Name" };
 
-      <ArrayField source="locations" sortable={false}>
-        <SingleFieldList linkType={false} component={ListComponent}>
-          <FunctionField
-            render={({
-              id,
-              name,
-              country,
-              region,
-              district,
-              city,
-              street,
-              building,
-              section,
-              floor,
-              room,
-              description,
-              parentId,
-            }: Location) => {
-              return (
-                <ListItem disablePadding>
-                  <Link to={`/locations/${id}/show`}>
-                    id: {id} {name} {country} {region} {district} {city}{" "}
-                    {street} {building} {section} {floor} {room}
-                    {parentId && `parentId: ${parentId}`}
+export const SubscriberList = () => {
+  const { data: locations, isLoading }: GetListI = useGetList("locations", {
+    filter: { parentId: null },
+  });
+
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <List filters={subscriberFilters}>
+      <Datagrid>
+        <TextField source="id" />
+        <TextField source="position" />
+        <TextField source="description" />
+
+        <FullNameField source="human" />
+
+        <ArrayField source="locations" sortable={false}>
+          <SingleFieldList linkType={false} component={ListComponent}>
+            <FunctionField
+              render={({
+                id,
+                name,
+                country,
+                region,
+                district,
+                city,
+                street,
+                building,
+                section,
+                floor,
+                room,
+                description,
+                parentId,
+              }: Location) => {
+                return (
+                  <ListItem disablePadding>
+                    {locations &&
+                      `${
+                        locations.find((location) => location.id === parentId)
+                          ?.name
+                      }, `}
+                    {name && `${name}, `} {country && `${country}, `}{" "}
+                    {region && `${region}, `} {district && `${district}, `}{" "}
+                    {city && `${city}, `} {street && `${street} street,`}{" "}
+                    {building && `${building}, `}{" "}
+                    {section && `section ${section}, `}{" "}
+                    {floor && `${floor} floor,`} {room && `room ${room}. `}
                     {description && `(description: ${description})`}
-                  </Link>
-                </ListItem>
-              );
-            }}
-          />
-        </SingleFieldList>
-      </ArrayField>
-      <EditButton />
-      <DeleteButton />
-    </Datagrid>
-  </List>
-);
+                  </ListItem>
+                );
+              }}
+            />
+          </SingleFieldList>
+        </ArrayField>
+        <EditButton />
+        <DeleteButton />
+      </Datagrid>
+    </List>
+  );
+};
 
 export const SubscriberEdit = () => {
   const { id } = useParams();

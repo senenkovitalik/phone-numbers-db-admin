@@ -7,7 +7,7 @@ export interface CommunicationPhoneNumber {
 }
 
 export interface Location {
-  id: string;
+  id: number;
   name: string;
   description: string;
   country: string;
